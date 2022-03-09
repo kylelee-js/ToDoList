@@ -1,25 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSetRecoilState } from "recoil";
-import { toDoState } from "../atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { categoryState, customCategoryState, toDoState } from "../atoms";
 
 interface IForm {
   toDo: string;
+  category: string;
+  customCategory?: string;
 }
 function CreateToDo() {
-  const { register, handleSubmit, setValue, setError } = useForm<IForm>();
-  const setToDos = useSetRecoilState(toDoState);
+  const { register, handleSubmit, setValue } = useForm<IForm>();
+  const [toDos, setToDos] = useRecoilState(toDoState);
+  const category = useRecoilValue(categoryState);
+  const [customCategoryArr, setCustomCategory] =
+    useRecoilState(customCategoryState);
 
-  const onValid = ({ toDo }: IForm) => {
-    console.log(toDo);
+  useEffect(() => {
+    localStorage.setItem("storedToDo", JSON.stringify(toDos));
+  }, [toDos]);
+
+  const onValid = (TODOS: IForm) => {
     setToDos((prev) => [
-      { text: toDo, id: Date.now(), category: "TODO" },
+      {
+        text: TODOS.toDo,
+        id: Date.now(),
+        category,
+        customCategory: TODOS.customCategory,
+      },
       ...prev,
     ]);
+    // setCategory를 통해 커스텀 카테고리 입력
+    if (TODOS.customCategory !== "") {
+      setCustomCategory((prev) => [TODOS.customCategory + "", ...prev]);
+    }
 
     // hook-form의 객체 중  "toDo" 프로퍼티의 값을 변경
     setValue("toDo", "");
+    setValue("category", "");
   };
+
   return (
     <>
       <form onSubmit={handleSubmit(onValid)}>
@@ -30,6 +49,7 @@ function CreateToDo() {
             minLength: { value: 5, message: "too short" },
           })}
         />
+        <input placeholder="Custom Category" {...register("customCategory")} />
         <button>Add</button>
       </form>
     </>
