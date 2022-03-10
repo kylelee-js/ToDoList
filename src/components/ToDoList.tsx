@@ -6,14 +6,22 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from "recoil";
-import { toDoState, toDoSelector, categoryState, Categories } from "../atoms";
+import {
+  toDoState,
+  toDoSelector,
+  categoryState,
+  customCategoryState,
+} from "../atoms";
+import CreateNewCategory from "./CreateNewCategory";
 import CreateToDo from "./CreateToDo";
 import ToDo from "./ToDo";
 
 function ToDoList() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const TODOS = useRecoilValue(toDoSelector);
-  const [category, setCategory] = useRecoilState(categoryState);
+  const [category, setCategoryState] = useRecoilState(categoryState);
+  const [customCategoryArr, setCustomCategory] =
+    useRecoilState(customCategoryState);
   useEffect(() => {
     if (toDos.length === 0) {
       const storedToDo = localStorage.getItem("storedToDo");
@@ -22,16 +30,19 @@ function ToDoList() {
     }
   }, []);
   const onInput = (event: React.FormEvent<HTMLSelectElement>) => {
-    setCategory(event.currentTarget.value as any);
+    setCategoryState(event.currentTarget.value as any);
   };
   return (
     <div>
       <h1>To Dos</h1>
       <select value={category} onInput={onInput}>
-        <option value={Categories.TODO}>{Categories.TODO}</option>
-        <option value={Categories.DOING}>{Categories.DOING}</option>
-        <option value={Categories.DONE}>{Categories.DONE}</option>
+        {customCategoryArr.map((customCate, idx) => (
+          <option key={idx} value={customCate.category}>
+            {customCate.category}
+          </option>
+        ))}
       </select>
+      <CreateNewCategory />
       <CreateToDo />
       <ul>{TODOS && TODOS.map((toDo) => <ToDo key={toDo.id} {...toDo} />)}</ul>
     </div>

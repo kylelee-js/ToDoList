@@ -3,28 +3,31 @@ import { atom, selector } from "recoil";
 const storedToDo = localStorage.getItem("storedToDo");
 const loadedToDo = JSON.parse(storedToDo as string);
 
-type categories = "DONE" | "DOING" | "TODO";
-export enum Categories {
-  "TODO" = "TODO",
-  "DOING" = "DOING",
-  "DONE" = "DONE",
+interface ICustomCategory {
+  category: string;
 }
+
+// type categories = "DONE" | "DOING" | "TODO";
+// export enum Categories {
+//   "TODO" = "TODO",
+//   "DOING" = "DOING",
+//   "DONE" = "DONE",
+// }
 
 export interface IToDo {
   text: string;
   id: number;
-  category: Categories;
-  customCategory?: string;
+  category: string;
 }
 
-export const categoryState = atom<Categories>({
+export const categoryState = atom<string>({
   key: "category",
-  default: Categories.TODO,
+  default: "TODO",
 });
 
-export const customCategoryState = atom<string[]>({
+export const customCategoryState = atom<ICustomCategory[]>({
   key: "customCategory",
-  default: [],
+  default: [{ category: "TODO" }, { category: "DOING" }, { category: "DONE" }],
 });
 
 export const toDoState = atom<IToDo[]>({
@@ -44,7 +47,7 @@ export const toDoSelector = selector({
 export const categorySelector = selector({
   key: "categorySelector",
   get: ({ get }) => {
-    const cate = get(categoryState);
-    return [];
+    const ccsArr = get(customCategoryState);
+    return ccsArr;
   },
 });

@@ -1,15 +1,17 @@
 import React from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { Categories, customCategoryState, IToDo, toDoState } from "../atoms";
+import { customCategoryState, IToDo, toDoState } from "../atoms";
 
 const CustomCategory = styled.button`
   border-radius: 50%;
   background-color: whitesmoke;
 `;
 
-function ToDo({ text, category, id, customCategory }: IToDo) {
+function ToDo({ text, category, id }: IToDo) {
   const [toDos, setToDos] = useRecoilState(toDoState);
+  const [categories, setCustomeCategory] = useRecoilState(customCategoryState);
+
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const {
       currentTarget: { name },
@@ -19,7 +21,7 @@ function ToDo({ text, category, id, customCategory }: IToDo) {
 
       const front = prev.slice(0, index);
       const back = prev.slice(index + 1);
-      const newToDo = { text, id, category: name as any, customCategory };
+      const newToDo = { text, id, category: name as any };
       const newArr = [...front, newToDo, ...back];
       return newArr;
     });
@@ -37,22 +39,21 @@ function ToDo({ text, category, id, customCategory }: IToDo) {
     <>
       <li>
         <span>* {text}</span>
-        {category !== Categories.DOING && (
-          <button name={Categories.DOING} onClick={onClick}>
+        {category !== "DOING" && (
+          <button name={"DOING"} onClick={onClick}>
             Doing
           </button>
         )}
-        {category !== Categories.TODO && (
-          <button name={Categories.TODO} onClick={onClick}>
+        {category !== "TODO" && (
+          <button name={"TODO"} onClick={onClick}>
             To Do
           </button>
         )}
-        {category !== Categories.DONE && (
-          <button name={Categories.DONE} onClick={onClick}>
+        {category !== "DONE" && (
+          <button name={"DONE"} onClick={onClick}>
             Done
           </button>
         )}
-        {customCategory && <CustomCategory>{customCategory}</CustomCategory>}
         <button onClick={onDelete}>X</button>
       </li>
     </>
