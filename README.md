@@ -1,4 +1,4 @@
-### Nomad Coder - ToDoList Challenge Assignment
+### Nomad Coder - Trello 클론 코딩
 
 - From 3/7 to 3/10
 
@@ -6,5 +6,6 @@
 * Styled-Component
 * Recoil
 * React-Hook-Form
+* React-beautiful-dnd
 
-ToDoList
+Kanban ToDoList
