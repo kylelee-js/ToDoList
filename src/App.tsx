@@ -1,16 +1,10 @@
 import GlobalStyle from "./GlobalStyle";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import styled from "styled-components";
-import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { toDoState } from "./atoms";
-import DraggableCard from "./components/DraggableCard";
 import Board from "./components/Board";
+import { useEffect } from "react";
 
 const Wrapper = styled.div`
   display: flex;
@@ -29,15 +23,16 @@ const Boards = styled.div`
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
 
-  const onDragEnd = ({ draggableId, destination, source }: DropResult) => {
+  const onDragEnd = ({ destination, source }: DropResult) => {
     if (!destination) return;
 
     if (destination?.droppableId == source.droppableId) {
       //same board
       setToDos((prev) => {
         const copiedToDos = [...prev[source.droppableId]];
+        const targetToDo = copiedToDos[source.index];
         copiedToDos.splice(source.index, 1);
-        copiedToDos.splice(destination.index, 0, draggableId);
+        copiedToDos.splice(destination.index, 0, targetToDo);
         return { ...prev, [source.droppableId]: copiedToDos };
       });
     } else {
@@ -45,9 +40,9 @@ function App() {
       setToDos((prev) => {
         const destinationToDos = [...prev[destination.droppableId]];
         const sourceToDos = [...prev[source.droppableId]];
-        const draggedId = sourceToDos[source.index];
+        const targetToDo = sourceToDos[source.index];
         sourceToDos.splice(source.index, 1);
-        destinationToDos.splice(destination.index, 0, draggableId);
+        destinationToDos.splice(destination.index, 0, targetToDo);
         return {
           ...prev,
           [destination.droppableId]: destinationToDos,
@@ -56,6 +51,10 @@ function App() {
       });
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("ToDos", JSON.stringify(toDos));
+  }, [toDos]);
   return (
     <>
       <GlobalStyle />

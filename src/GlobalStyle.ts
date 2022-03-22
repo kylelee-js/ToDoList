@@ -9,6 +9,7 @@ const GlobalStyle = createGlobalStyle`
     background-color:${(props) => props.theme.bgColor};
     color : "black";
     transition: all 0.25s linear;
+    margin: 0 10px;
   }
   a {
     text-decoration: none;
